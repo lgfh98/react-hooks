@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useMemo } from "react";
+import React, { useState, useEffect, useReducer, useMemo, useRef } from "react";
 
 const initialState = {
   favorites: [],
@@ -20,6 +20,7 @@ const Characters = () => {
   const [characters, setCharacters] = useState([]);
   const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
   const [search, setSearch] = useState("");
+  const searchInput = useRef(null);
 
   const fetchCharacters = async (url) => {
     try {
@@ -33,8 +34,13 @@ const Characters = () => {
     dispatch({ type: "ADD_TO_FAVORITES", payload: favorite });
   };
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
+  // Sin useRef ❌
+  // const handleSearch = (e) => {
+  //   setSearch(e.target.value);
+  // };
+  // Con useRef
+  const handleSearch = () => {
+    setSearch(searchInput.current.value);
   };
 
   useEffect(() => {
@@ -46,7 +52,7 @@ const Characters = () => {
     fetchCharacters(`https://rickandmortyapi.com/api/character/`);
   }, []);
 
-  // Sin Memoization
+  // Sin Memoization ❌
   // const filteredCharacters = characters.filter((character) => {
   //   return character.name.toLowerCase().includes(search.toLowerCase());
   // });
@@ -66,7 +72,12 @@ const Characters = () => {
       ))}
 
       <div className="Search">
-        <input type="text" value={search} onChange={handleSearch} />
+        <input
+          ref={searchInput}
+          type="text"
+          value={search}
+          onChange={handleSearch}
+        />
       </div>
 
       {filteredCharacters.map((character) => (
